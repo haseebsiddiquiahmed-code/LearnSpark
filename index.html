@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LearnSpark | Learn Smarter</title>
+<style>
+:root {
+  --bg:#080d1b; --panel:#111a30; --blue:#3977ff;
+  --purple:#9164ff; --text:#f4f6ff; --muted:#9ca9c5;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);
+font-family:Arial,sans-serif}
+header{padding:20px 6%;display:flex;justify-content:space-between;
+align-items:center;border-bottom:1px solid #202b44}
+.logo{font-size:23px;font-weight:bold}
+.logo span{color:#79a4ff}
+button{cursor:pointer;border:0;border-radius:10px;padding:12px 17px;
+background:var(--blue);color:white;font-weight:bold}
+button:hover{filter:brightness(1.15)}
+nav{display:flex;gap:9px;flex-wrap:wrap}
+nav button{background:#17233c;color:#c9d7f5}
+nav button.active{background:var(--blue);color:white}
+main{max-width:1100px;margin:auto;padding:35px 20px}
+h1{font-size:clamp(30px,5vw,46px);margin-bottom:10px}
+h2{margin-top:0}
+p{color:var(--muted);line-height:1.6}
+.hero{padding:35px;border-radius:20px;
+background:linear-gradient(120deg,#152d60,#29204c);
+margin-bottom:25px}
+.hero h1 span{color:#8db4ff}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px}
+.card,.panel{background:var(--panel);padding:23px;border-radius:16px;
+border:1px solid #202c47}
+.card{cursor:pointer;transition:.2s}
+.card:hover{transform:translateY(-4px);border-color:#578bff}
+.card .emoji{font-size:30px}
+.card h3{margin-bottom:5px}
+.panel{margin-top:20px}
+.hidden{display:none!important}
+.stat{font-size:30px;font-weight:bold;color:#8db4ff}
+.progress{height:9px;background:#25324b;border-radius:10px;overflow:hidden}
+.progress div{height:100%;background:linear-gradient(90deg,var(--blue),var(--purple))}
+.answer{display:block;width:100%;text-align:left;margin:10px 0;
+background:#1a2945;border:1px solid #304263}
+.answer:hover{background:#263b61}
+.flashcard{min-height:170px;display:grid;place-items:center;
+text-align:center;font-size:23px;cursor:pointer}
+input,textarea,select{width:100%;padding:13px;border-radius:9px;
+background:#0c1427;border:1px solid #344361;color:white;margin:8px 0}
+footer{text-align:center;color:var(--muted);padding:35px}
+.small{font-size:13px;color:var(--muted)}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">🚀 Learn<span>Spark</span></div>
+  <nav>
+    <button class="active" onclick="showPage('home',this)">Home</button>
+    <button onclick="showPage('quiz',this)">Quizzes</button>
+    <button onclick="showPage('cards',this)">Flashcards</button>
+    <button onclick="showPage('assistant',this)">AI Assistant</button>
+    <button onclick="showPage('games',this)">Study Games</button>
+  </nav>
+</header>
+
+<main>
+<section id="home">
+  <div class="hero">
+    <p>YOUR LEARNING JOURNEY STARTS HERE</p>
+    <h1>Learn smarter.<br><span>Grow faster.</span></h1>
+    <p>Explore subjects, challenge yourself, and discover what you can achieve.</p>
+    <button onclick="showPage('quiz')">Start learning →</button>
+  </div>
+
+  <h2>Your dashboard</h2>
+  <div class="cards">
+    <div class="card"><div class="emoji">🏆</div>
+      <p>Activities completed</p><div class="stat" id="completed">0</div></div>
+    <div class="card"><div class="emoji">⭐</div>
+      <p>Total points</p><div class="stat" id="points">0</div></div>
+    <div class="card"><div class="emoji">🎯</div>
+      <p>Daily challenge</p><div class="stat">Ready!</div></div>
+  </div>
+
+  <div class="panel">
+    <h3>Learning progress</h3>
+    <p id="progressText">Complete activities to fill your progress bar.</p>
+    <div class="progress"><div id="progressBar" style="width:0%"></div></div>
+  </div>
+
+  <h2 style="margin-top:30px">Explore LearnSpark</h2>
+  <div class="cards">
+    <div class="card" onclick="showPage('quiz')">
+      <div class="emoji">🧠</div><h3>Interactive quizzes</h3>
+      <p>Test your knowledge in different subjects.</p>
+    </div>
+    <div class="card" onclick="showPage('cards')">
+      <div class="emoji">📚</div><h3>Flashcards</h3>
+      <p>Remember important facts and definitions.</p>
+    </div>
+    <div class="card" onclick="showPage('challenge')">
+      <div class="emoji">🔥</div><h3>Daily challenge</h3>
+      <p>Try today's learning challenge.</p>
+    </div>
+    <div class="card" onclick="showPage('games')">
+      <div class="emoji">🎮</div><h3>Study games</h3>
+      <p>Make learning fun with mini games.</p>
+    </div>
+  </div>
+</section>
+
+<section id="quiz" class="hidden">
+  <h1>🧠 Knowledge Quiz</h1>
+  <p>Choose a subject and test yourself!</p>
+  <select id="subject" onchange="startQuiz()">
+    <option value="Math">Mathematics</option>
+    <option value="Science">Science</option>
+    <option value="English">English</option>
+    <option value="History">History</option>
+  </select>
+  <div class="panel">
+    <div id="quizContent">Choose a subject to begin.</div>
+  </div>
+</section>
+
+<section id="cards" class="hidden">
+  <h1>📚 Flashcards</h1>
+  <p>Click the card to reveal its answer.</p>
+  <div class="panel">
+    <div class="flashcard" id="flashcard" onclick="flipCard()">
+      <div>What is the largest planet in our solar system?<p class="small">Click to reveal answer</p></div>
+    </div>
+    <div style="display:flex;justify-content:space-between;gap:10px">
+      <button onclick="previousCard()">← Previous</button>
+      <span id="cardNumber">1 / 5</span>
+      <button onclick="nextCard()">Next →</button>
+    </div>
+  </div>
+</section>
+
+<section id="assistant" class="hidden">
+  <h1>✨ Study Assistant</h1>
+  <p>Ask a study question and get help understanding it.</p>
+  <div class="panel">
+    <label for="question">What would you like help learning?</label>
+    <textarea id="question" rows="4" placeholder="Example: Explain photosynthesis in simple words..."></textarea>
+    <button onclick="askAssistant()">Get study help</button>
+    <div id="assistantAnswer"></div>
+    <p class="small">Prototype: this demo uses sample explanations. A real AI connection will be added separately.</p>
+  </div>
+</section>
+
+<section id="challenge" class="hidden">
+  <h1>🔥 Daily Challenge</h1>
+  <p>A new challenge to keep your brain active.</p>
+  <div class="panel">
+    <span class="small">TODAY'S MATH CHALLENGE</span>
+    <h2>What is 15 × 8?</h2>
+    <div id="challengeOptions"></div>
+    <div id="challengeResult"></div>
+  </div>
+</section>
+
+<section id="games" class="hidden">
+  <h1>🎮 Study Games</h1>
+  <p>Learn while playing!</p>
+  <div class="panel">
+    <h2>Quick Math</h2>
+    <p>Solve the problem to earn points.</p>
+    <h2 id="gameQuestion">12 + 9 = ?</h2>
+    <input id="gameAnswer" type="number" placeholder="Your answer">
+    <button onclick="checkGame()">Check answer</button>
+    <div id="gameResult"></div>
+  </div>
+</section>
+</main>
+
+<footer>⚡ LearnSpark · Learn smarter. Grow faster.<br>
+<span class="small">A learning platform made for curious minds.</span></footer>
+
+<script>
+const questions={
+ Math:[
+  {q:"What is 12 × 6?",a:["62","72","82","66"],c:1},
+  {q:"What is 144 ÷ 12?",a:["10","11","12","14"],c:2},
+  {q:"What is 25% of 80?",a:["10","15","20","25"],c:2}
+ ],
+ Science:[
+  {q:"Which planet is known as the Red Planet?",a:["Venus","Mars","Jupiter","Saturn"],c:1},
+  {q:"What gas do plants absorb?",a:["Oxygen","Nitrogen","Carbon dioxide","Hydrogen"],c:2},
+  {q:"What is the center of an atom called?",a:["Cell","Nucleus","Core","Electron"],c:1}
+ ],
+ English:[
+  {q:"Which word is a noun?",a:["Quickly","Beautiful","Teacher","Run"],c:2},
+  {q:"What is the opposite of ancient?",a:["Old","Modern","Historic","Past"],c:1},
+  {q:"Which is a complete sentence?",a:["Running fast","The dog barked.","Because it rained","Under the table"],c:1}
+ ],
+ History:[
+  {q:"Which civilization built the pyramids at Giza?",a:["Romans","Ancient Egyptians","Vikings","Greeks"],c:1},
+  {q:"Who was the first president of the United States?",a:["Abraham Lincoln","George Washington","Thomas Jefferson","John Adams"],c:1},
+  {q:"Where did the Olympic Games originate?",a:["Rome","Egypt","Ancient Greece","China"],c:2}
+ ]
+};
+let score=0, qi=0, selected="Math";
+let completed=Number(localStorage.getItem("completed")||0);
+let points=Number(localStorage.getItem("points")||0);
+
+function showPage(id,btn){
+ document.querySelectorAll("main section").forEach(s=>s.classList.add("hidden"));
+ document.getElementById(id).classList.remove("hidden");
+ document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+ if(btn)btn.classList.add("active");
+ if(id==="challenge")loadChallenge();
+ updateDashboard();
+}
+function updateDashboard(){
+ document.getElementById("completed").textContent=completed;
+ document.getElementById("points").textContent=points;
+ let percent=Math.min(100,completed*10);
+ document.getElementById("progressBar").style.width=percent+"%";
+ document.getElementById("progressText").textContent=percent+"% learning progress";
+}
+function reward(n){
+ points+=n;completed++;
+ localStorage.setItem("points",points);
+ localStorage.setItem("completed",completed);
+ updateDashboard();
+}
+function startQuiz(){
+ selected=document.getElementById("subject").value;
+ qi=0;score=0;renderQuestion();
+}
+function renderQuestion(){
+ let q=questions[selected][qi];
+ document.getElementById("quizContent").innerHTML=
+ `<p>Question ${qi+1} of ${questions[selected].length}</p>
+ <h2>${q.q}</h2>`+
+ q.a.map((a,i)=>`<button class="answer" onclick="answerQuiz(${i})">${a}</button>`).join("")+
+ `<div id="quizFeedback"></div>`;
+}
+function answerQuiz(i){
+ let q=questions[selected][qi];
+ let buttons=document.querySelectorAll("#quizContent .answer");
+ buttons.forEach(b=>b.disabled=true);
+ if(i===q.c){
+  score++;
+  document.getElementById("quizFeedback").innerHTML="<p>✅ Correct! Great work!</p>";
+ }else{
+  document.getElementById("quizFeedback").innerHTML="<p>Not quite! The correct answer is "+q.a[q.c]+".</p>";
+ }
+ let next=document.createElement("button");
+ next.textContent=qi===questions[selected].length-1?"Finish quiz":"Next question";
+ next.onclick=()=>{
+  qi++;
+  if(qi<questions[selected].length)renderQuestion();
+  else{
+   reward(score*10);
+   document.getElementById("quizContent").innerHTML=
+   `<h2>Quiz complete! 🎉</h2><p>You got ${score} out of ${questions[selected].length} correct.</p><button onclick="startQuiz()">Try again</button>`;
+  }
+ };
+ document.getElementById("quizFeedback").appendChild(next);
+}
+const flashcards=[
+ ["What is the largest planet?","Jupiter"],
+ ["What is H₂O?","Water"],
+ ["How many sides does a hexagon have?","Six"],
+ ["What is a noun?","A word that names a person, place, thing, or idea."],
+ ["What is the freezing point of water?","0°C (32°F)"]
+];
+let ci=0,flipped=false;
+function renderCard(){
+ document.getElementById("cardNumber").textContent=(ci+1)+" / "+flashcards.length;
+ document.getElementById("flashcard").innerHTML=
+ `<div>${flipped?flashcards[ci][1]:flashcards[ci][0]}
+ <p class="small">Click to ${flipped?"see question":"reveal answer"}</p></div>`;
+}
+function flipCard(){flipped=!flipped;renderCard()}
+function nextCard(){ci=(ci+1)%flashcards.length;flipped=false;renderCard()}
+function previousCard(){ci=(ci-1+flashcards.length)%flashcards.length;flipped=false;renderCard()}
+
+function askAssistant(){
+ let q=document.getElementById("question").value.trim();
+ if(!q){alert("Please enter a question first!");return}
+ document.getElementById("assistantAnswer").innerHTML=
+ "<p>💡 <b>Study tip:</b> Break your question into smaller parts. Look for the key words, identify what you already know, and work through one step at a time. For a real AI-powered explanation, we'll connect an AI service in a future version.</p>";
+}
+function loadChallenge(){
+ document.getElementById("challengeOptions").innerHTML=
+ [100,110,120,130].map(n=>`<button class="answer" onclick="challengeAnswer(${n})">${n}</button>`).join("");
+}
+function challengeAnswer(n){
+ let result=document.getElementById("challengeResult");
+ document.querySelectorAll("#challengeOptions button").forEach(b=>b.disabled=true);
+ if(n===120){
+  result.innerHTML="<p>🎉 Correct! You earned 15 points!</p>";
+  reward(15);
+ }else result.innerHTML="<p>Good try! The answer is 120. Keep practicing!</p>";
+}
+let gameDone=false;
+function checkGame(){
+ if(gameDone)return;
+ let a=Number(document.getElementById("gameAnswer").value);
+ if(a===21){
+  gameDone=true;
+  document.getElementById("gameResult").textContent="🎉 Correct! You earned 10 points!";
+  reward(10);
+ }else document.getElementById("gameResult").textContent="Try again! You've got this.";
+}
+renderCard();
+updateDashboard();
+</script>
+</body>
+</html>
